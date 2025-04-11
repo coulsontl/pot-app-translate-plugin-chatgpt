@@ -24,7 +24,7 @@ ChatGPT翻译插件 - 基于OpenAI ChatGPT API的高质量翻译服务
 ## 🔧 前置要求
 
 - [pot-app](https://pot-app.com/) - 请先下载并安装pot-app
-- Gemini API密钥 - 需要申请OpenAI ChatGPT API密钥
+- OpenAI API密钥 - 需要申请OpenAI ChatGPT API密钥
 
 ## 📥 安装方法
 
