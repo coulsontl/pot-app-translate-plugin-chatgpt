@@ -1,9 +1,9 @@
 {
-  "id": "plugin.com.pot-app.translate.oneapi.chatgpt",
+  "id": "plugin.coulsontl.translate.chatgpt",
   "plugin_type": "translate",
   "icon": "openai.svg",
-  "display": "OneApi-ChatGPT",
-  "homepage": "https://github.com/coulsontl/pot-app-translate-plugin-oneapi-chatgpt",
+  "display": "ChatGPT",
+  "homepage": "https://github.com/coulsontl/pot-app-translate-plugin-chatgpt",
   "needs": [
     {
       "key": "model",

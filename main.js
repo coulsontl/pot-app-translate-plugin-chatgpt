@@ -112,7 +112,7 @@ async function translate(text, from, to, options) {
                 buffer += chunk;
 
                 // 尝试处理完整的消息
-                const lines = buffer.split('\n\n');
+                const lines = buffer.split('\n');
                 // 保留最后一个可能不完整的部分
                 buffer = lines.pop() || '';
 
@@ -121,7 +121,7 @@ async function translate(text, from, to, options) {
 
             // 处理buffer中剩余的任何数据
             if (buffer) {
-                const lines = buffer.split('\n\n');
+                const lines = buffer.split('\n');
                 processLines(lines);
             }
 
