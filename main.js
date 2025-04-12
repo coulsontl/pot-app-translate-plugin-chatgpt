@@ -1,7 +1,8 @@
-async function translate(text, from, to, options) {
+// 核心翻译函数
+function translate_core(text, from, to, options, defaultModel) {
     const { config, detect, setResult } = options;
 
-    let { apiKey, model = "gpt-4o", useStream: use_stream = 'true', temperature = '0', topP = '0.95', systemPrompt, userPrompt, requestArguments, requestPath } = config;
+    let { apiKey, model = defaultModel, useStream: use_stream = 'true', temperature = '0', topP = '0.95', systemPrompt, userPrompt, requestArguments, requestPath } = config;
 
     if (!apiKey) {
         throw new Error("Please configure API Key first");
@@ -49,93 +50,100 @@ async function translate(text, from, to, options) {
     }
     // return JSON.stringify(body);
 
-    let res = await window.fetch(apiUrl.href, {
+    let res = window.fetch(apiUrl.href, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(body),
     });
 
-    if (res.ok) {
-        // 非流式输出
-        if (!useStream) {
-            let result = await res.json();
-            const { choices } = result;
-            if (choices) {
-                let target = choices[0].message.content.trim();
-                if (target) {
-                    return target
-                } else {
-                    throw JSON.stringify(choices);
-                }
-            } else {
-                throw JSON.stringify(result);
-            }
-        }
-
-        // 流式输出
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let result = '';
-        let buffer = '';  // 用于存储跨块的不完整消息
-
-        const processLines = (lines) => {
-            for (const line of lines) {
-                if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-                    try {
-                        const data = JSON.parse(line.slice(6));
-                        if (data.choices && data.choices.length > 0) {
-                            const choice = data.choices[0];
-                            // 处理标准流式返回格式
-                            if (choice.delta && choice.delta.content) {
-                                result += choice.delta.content;
-                                setResult(result);
-                            }
-                            // 处理其他可能的格式
-                            else if (choice.text) {
-                                result += choice.text;
-                                setResult(result);
-                            }
+    return res.then(res => {
+        if (res.ok) {
+            // 非流式输出
+            if (!useStream) {
+                return res.json().then(result => {
+                    const { choices } = result;
+                    if (choices) {
+                        let target = choices[0].message.content.trim();
+                        if (target) {
+                            return target
+                        } else {
+                            throw JSON.stringify(choices);
                         }
-                    } catch (e) {
-                        console.error('解析JSON失败:', e, line);
+                    } else {
+                        throw JSON.stringify(result);
+                    }
+                });
+            }
+
+            // 流式输出
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let result = '';
+            let buffer = '';  // 用于存储跨块的不完整消息
+
+            const processLines = (lines) => {
+                for (const line of lines) {
+                    if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+                            if (data.choices && data.choices.length > 0) {
+                                const choice = data.choices[0];
+                                // 处理标准流式返回格式
+                                if (choice.delta && choice.delta.content) {
+                                    result += choice.delta.content;
+                                    setResult(result);
+                                }
+                                // 处理其他可能的格式
+                                else if (choice.text) {
+                                    result += choice.text;
+                                    setResult(result);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('解析JSON失败:', e, line);
+                        }
                     }
                 }
             }
-        }
 
-        try {
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) {
-                    // 确保处理完所有剩余数据
-                    const remainingText = decoder.decode();
-                    if (remainingText) buffer += remainingText;
-                    break;
+            const processStream = async () => {
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) {
+                            // 确保处理完所有剩余数据
+                            const remainingText = decoder.decode();
+                            if (remainingText) buffer += remainingText;
+                            break;
+                        }
+
+                        // 解码当前块并追加到缓冲区
+                        const chunk = decoder.decode(value, { stream: true });
+                        buffer += chunk;
+
+                        // 尝试处理完整的消息
+                        const lines = buffer.split('\n');
+                        // 保留最后一个可能不完整的部分
+                        buffer = lines.pop() || '';
+
+                        processLines(lines);
+                    }
+
+                    // 处理buffer中剩余的任何数据
+                    if (buffer) {
+                        const lines = buffer.split('\n');
+                        processLines(lines);
+                    }
+
+                    return result;
+                } catch (error) {
+                    throw `Streaming response processing error: ${error.message}`;
                 }
+            };
 
-                // 解码当前块并追加到缓冲区
-                const chunk = decoder.decode(value, { stream: true });
-                buffer += chunk;
-
-                // 尝试处理完整的消息
-                const lines = buffer.split('\n');
-                // 保留最后一个可能不完整的部分
-                buffer = lines.pop() || '';
-
-                processLines(lines);
-            }
-
-            // 处理buffer中剩余的任何数据
-            if (buffer) {
-                const lines = buffer.split('\n');
-                processLines(lines);
-            }
-
-            return result;
-        } catch (error) {
-            throw `Streaming response processing error: ${error.message}`;
+            return processStream();
+        } else {
+            throw new Error(`Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`);
         }
-    } else {
-        throw new Error(`Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`);
-    }
+    });
 }

@@ -1,8 +1,8 @@
 {
-  "id": "plugin.coulsontl.translate.chatgpt",
+  "id": "plugin.coulsontl.translate.grok",
   "plugin_type": "translate",
-  "icon": "openai.svg",
-  "display": "ChatGPT",
+  "icon": "grok.svg",
+  "display": "xAI",
   "homepage": "https://github.com/coulsontl/pot-app-translate-plugin-chatgpt",
   "needs": [
     {
@@ -85,4 +85,4 @@
     "nn_no": "no",
     "fa": "fa"
   }
-}
+} 
