@@ -1,7 +1,7 @@
 async function translate(text, from, to, options) {
     const { config, detect, setResult } = options;
 
-    let { apiKey, model = "gpt-4o", useStream: use_stream = 'true', systemPrompt, userPrompt, requestArguments, requestPath } = config;
+    let { apiKey, model = "gpt-4o", useStream: use_stream = 'true', temperature = '0', topP = '0.95', systemPrompt, userPrompt, requestArguments, requestPath } = config;
 
     if (!apiKey) {
         throw new Error("Please configure API Key first");
@@ -43,8 +43,8 @@ async function translate(text, from, to, options) {
             }
         ],
         stream: useStream,
-        temperature: 0.1,
-        top_p: 0.99,
+        temperature: parseFloat(temperature),
+        top_p: parseFloat(topP),
         ...args
     }
     // return JSON.stringify(body);
@@ -84,9 +84,15 @@ async function translate(text, from, to, options) {
                     try {
                         const data = JSON.parse(line.slice(6));
                         if (data.choices && data.choices.length > 0) {
-                            const { delta } = data.choices[0];
-                            if (delta && delta.content) {
-                                result += delta.content;
+                            const choice = data.choices[0];
+                            // 处理标准流式返回格式
+                            if (choice.delta && choice.delta.content) {
+                                result += choice.delta.content;
+                                setResult(result);
+                            }
+                            // 处理其他可能的格式
+                            else if (choice.text) {
+                                result += choice.text;
                                 setResult(result);
                             }
                         }

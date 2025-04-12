@@ -6,11 +6,6 @@
   "homepage": "https://github.com/coulsontl/pot-app-translate-plugin-chatgpt",
   "needs": [
     {
-      "key": "model",
-      "display": "模型",
-      "type": "input"
-    },
-    {
       "key": "requestPath",
       "display": "请求路径",
       "type": "input"
@@ -21,13 +16,18 @@
       "type": "input"
     },
     {
-        "key": "useStream",
-        "display": "流式输出",
-        "type": "select",
-        "options": {
-            "true": "是 / Yes",
-            "false": "否 / No"
-        }
+      "key": "model",
+      "display": "模型",
+      "type": "input"
+    },
+    {
+      "key": "useStream",
+      "display": "流式输出",
+      "type": "select",
+      "options": {
+        "true": "是 / Yes",
+        "false": "否 / No"
+      }
     },
     {
       "key": "systemPrompt",
@@ -40,8 +40,20 @@
       "type": "input"
     },
     {
+      "key": "temperature",
+      "display": "Temperature",
+      "desc": "设置模型的temperature参数(0-1之间)，越低越精确，越高越创意",
+      "type": "input"
+    },
+    {
+      "key": "topP",
+      "display": "Top_P",
+      "desc": "设置模型的top_p参数(0-1之间)",
+      "type": "input"
+    },
+    {
       "key": "requestArguments",
-      "display": "Request Arguments",
+      "display": "其他参数",
       "type": "input"
     }
   ],
