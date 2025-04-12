@@ -39,7 +39,7 @@ jobs:
             if [[ "$name" == "chatgpt" ]]; then
               display_name="ChatGPT: OpenAI API兼容的翻译插件"
             elif [[ "$name" == "grok" ]]; then
-              display_name="Grok: x.ai API兼容的翻译插件"
+              display_name="Grok: xAI API兼容的翻译插件"
             else
               display_name="$name: 通用API兼容的翻译插件"
             fi
@@ -73,8 +73,6 @@ jobs:
             This release contains the following plugins:
             
             ${{ env.PLUGIN_LIST }}
-            
-            Built from commit: ${{ github.sha }}
             
             ### 安装方法 / Installation
             
