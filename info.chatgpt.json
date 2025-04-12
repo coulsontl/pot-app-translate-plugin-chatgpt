@@ -16,9 +16,21 @@
       "type": "input"
     },
     {
-      "key": "model",
-      "display": "模型",
-      "type": "input"
+      "key": "modelName",
+      "display": "模型选择",
+      "desc": "选择使用的Gemini模型",
+      "type": "select",
+      "options": {
+        "gpt-4o": "GPT-4o",
+        "gpt-4o-mini": "GPT-4o mini",
+        "custom": "自定义模型"
+      }
+    },
+    {
+      "key": "customModelName",
+      "display": "自定义模型名称",
+      "type": "input",
+      "desc": "当选择\"自定义模型\"时，请在此处输入模型名称"
     },
     {
       "key": "useStream",

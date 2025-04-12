@@ -2,7 +2,7 @@
 function translate_core(text, from, to, options, defaultModel) {
     const { config, detect, setResult } = options;
 
-    let { apiKey, model = defaultModel, useStream: use_stream = 'true', temperature = '0', topP = '0.95', systemPrompt, userPrompt, requestArguments, requestPath } = config;
+    let { apiKey, modelName, customModelName, useStream: use_stream = 'true', temperature = '0', topP = '0.95', systemPrompt, userPrompt, requestArguments, requestPath } = config;
 
     if (!apiKey) {
         throw new Error("Please configure API Key first");
@@ -18,6 +18,12 @@ function translate_core(text, from, to, options, defaultModel) {
     const apiUrl = new URL(requestPath);
 
     const useStream = use_stream !== "false";
+
+    // 处理模型选择
+    let model = modelName || defaultModel;
+    if (modelName === 'custom') {
+        model = customModelName || defaultModel;
+    }
 
     // in openai like api, /v1 is not required
     if (!apiUrl.pathname.endsWith('/chat/completions')) {

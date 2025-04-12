@@ -16,9 +16,25 @@
       "type": "input"
     },
     {
-      "key": "model",
-      "display": "模型",
-      "type": "input"
+      "key": "modelName",
+      "display": "模型选择",
+      "desc": "选择使用的Gemini模型",
+      "type": "select",
+      "options": {
+        "grok-2-1212": "Grok 2 1212",
+        "grok-3-beta": "Grok 3 Beta",
+        "grok-3-fast-beta": "Grok 3 Beta (Fast)",
+        "grok-3-mini-beta": "Grok 3 Mini Beta",
+        "grok-3-mini-fast-beta": "Grok 3 Mini Beta (Fast)",
+        "grok-beta": "Grok Beta",
+        "custom": "自定义模型"
+      }
+    },
+    {
+      "key": "customModelName",
+      "display": "自定义模型名称",
+      "type": "input",
+      "desc": "当选择\"自定义模型\"时，请在此处输入模型名称"
     },
     {
       "key": "useStream",
